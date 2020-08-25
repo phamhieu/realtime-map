@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Polyline } from 'react-leaflet'
-import { RoundToFixDecimals } from "lib/utils"
+import { RoundToFixDecimals } from "lib/Utils"
 import TextLog from "components/TextLog"
 
 function MapView({ supabase, clientRef, center, zoom }) {
