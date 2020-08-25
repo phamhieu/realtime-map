@@ -33,12 +33,11 @@ Run this sql query to create `locations` table.
 ```sql
 -- USERS
 CREATE TYPE public.user_status AS ENUM ('ONLINE', 'OFFLINE');
-CREATE TYPE public.user_role AS ENUM ('DRIVER', 'MANAGER');
 CREATE TABLE public.users (
   id uuid NOT NULL PRIMARY KEY, -- UUID from auth.users
   username text,
-  status user_status DEFAULT 'OFFLINE'::public.user_status
-  role user_role DEFAULT 'DRIVER'::public.user_role
+  status user_status DEFAULT 'OFFLINE'::public.user_status,
+  is_manager boolean DEFAULT false NOT NULL
 );
 COMMENT ON table public.users IS 'Profile data for each user.';
 COMMENT ON column public.users.id IS 'References the internal Supabase Auth user.';
@@ -60,11 +59,6 @@ ALTER TABLE public.locations ENABLE ROW LEVEL SECURITY;
 COMMENT ON table public.locations IS 'Individual locations sent by each user.';
 CREATE POLICY "Allow logged-in read access" on public.locations USING ( auth.role() = 'authenticated' );
 CREATE POLICY "Allow individual insert access" on public.locations FOR INSERT WITH CHECK ( auth.uid() = user_id );
-
--- DUMMY DATA
-INSERT INTO public.users (id, username)
-VALUES
-    ('8d0fd2b3-9ca7-4d9e-a95f-9e13dded323e', 'supabot');
 ```
 
 #### Setup env vars
