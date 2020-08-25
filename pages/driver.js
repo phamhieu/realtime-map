@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { nanoid } from 'nanoid'
 import styles from 'styles/Map.module.css'
 import { supabase } from 'lib/Store'
+import { signIn, signOut, useSession } from 'next-auth/client'
 
 const MapInput = dynamic(
   () => import('components/MapInput'),
@@ -11,6 +12,7 @@ const MapInput = dynamic(
 )
 
 export default function Page() {
+  const [session, loading] = useSession()
   const [clientRef, setClientRef] = useState(null)
   const center = {
     lat: 1.3489728457596013,
@@ -52,9 +54,18 @@ export default function Page() {
         </p>
 
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <MapInput supabase={supabase} clientRef={clientRef} center={center} zoom={zoomLevel} />
-          </div>
+          {!session && <>
+            Not signed in <br />
+            <button onClick={signIn}>Sign in</button>
+          </>}
+          {session && <>
+            <div className={styles.card}>
+              <MapInput supabase={supabase} clientRef={clientRef} center={center} zoom={zoomLevel} />
+              Signed in as {session.user.email} <br />
+              <button onClick={signOut}>Sign out</button>
+            </div>
+          </>}
+
         </div>
       </main>
 
