@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Head from 'next/head'
 import styles from 'styles/Home.module.css'
 
 export default function Page() {
-
-  useEffect(() => {
-    
-  }, [])
-
   return (
     <div className={styles.container}>
       <Head>
@@ -24,26 +20,30 @@ export default function Page() {
         </p>
 
         <div className={styles.grid}>
-          <a href="/driver" className={styles.card}>
-            <h3>Driver View &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-          <a href="/manager" className={styles.card}>
-            <h3>Manager View &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+          <Link href="/driver">
+            <a className={styles.card}>
+              <h3>Driver View &rarr;</h3>
+              <p>Find in-depth information about Next.js features and API.</p>
+            </a>
+          </Link>
+          <Link href="/manager">
+            <a className={styles.card}>
+              <h3>Manager View &rarr;</h3>
+              <p>Find in-depth information about Next.js features and API.</p>
+            </a>
+          </Link>
         </div>
 
       </main>
 
-      <footer className={styles.footer}>
+      <footer className="footer">
         <a
           href="https://supabase.io"
           target="_blank"
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src="/supabase.svg" alt="Supabase Logo" className={styles.logo} />
+          <img src="/supabase.svg" alt="Supabase Logo" className="logo" />
         </a>
       </footer>
     </div>

@@ -1,6 +1,8 @@
 import NextAuth from 'next-auth'
 import Providers from 'next-auth/providers'
-import { supabase } from 'lib/Store'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_ENDPOINT, process.env.NEXT_PUBLIC_SUPABASE_APIKEY);
 
 const options = {
   // Configure one or more authentication providers
@@ -13,30 +15,32 @@ const options = {
       // e.g. domain, username, password, 2FA token, etc.
       credentials: {
         username: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" }
       },
       authorize: async (credentials) => {
-        const { username, password } = credentials
+        const { username, password, role } = credentials
 
-        let authUser = null
+        let authBody = null
         let isSignup = false
         try {
           const { body } = await supabase.auth.login(username, password)
-          authUser = body.user
+          authBody = body
         } catch (error) {
           isSignup = true
           const { body } = await supabase.auth.signup(username, password)
-          authUser = body.user
+          authBody = body
         }
-        if (!authUser) return Promise.resolve(null)
+        if (!authBody) return Promise.resolve(null)
+        // console.log(authBody)
 
         let user = null
         try {
           const { body } = isSignup
-            ? await supabase.from('users').insert([{ id: authUser.id, username }]).single()
+            ? await supabase.from('users').insert([{ id: authBody.user.id, username, role }]).single()
             : await supabase
               .from('users')
-              .match({ id: authUser.id })
+              .match({ id: authBody.user.id })
               .select('*')
               .single()
           user = body
@@ -55,8 +59,9 @@ const options = {
      * @return {object}              Session that will be returned to the client 
      */
     session: async (session, user, sessionToken) => {
+      console.log(user)
       session.user.id = user.id
-      session.user.is_manager = user.is_manager
+      session.user.role = user.role
       return Promise.resolve(session)
     },
     /**
@@ -68,12 +73,13 @@ const options = {
      * @return {object}            JSON Web Token that will be saved
      */
     jwt: async (token, user, account, profile, isNewUser) => {
+      console.log("jwt", user)
       const isSignIn = (user) ? true : false
       if (isSignIn) {
         token.id = user.id
         token.email = user.username
         token.name = user.username
-        token.is_manager = user.is_manager
+        token.role = user.role
       }
       return Promise.resolve(token)
     }

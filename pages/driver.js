@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
-import { nanoid } from 'nanoid'
 import styles from 'styles/Map.module.css'
 import { supabase } from 'lib/Store'
-import { signIn, signOut, useSession } from 'next-auth/client'
+import { signOut, useSession } from 'next-auth/client'
+import SignIn from 'components/SignIn'
 
 const MapInput = dynamic(
   () => import('components/MapInput'),
@@ -13,21 +13,12 @@ const MapInput = dynamic(
 
 export default function Page() {
   const [session, loading] = useSession()
-  const [clientRef, setClientRef] = useState(null)
   const center = {
     lat: 1.3489728457596013,
     lng: 103.77043978311998
   }
   const zoomLevel = 14
-
-  useEffect(() => {
-    let ref = localStorage.getItem('_client-ref')
-    if (!ref) {
-      ref = nanoid()
-      localStorage.setItem('_client-ref', ref)
-    }
-    setClientRef(ref)
-  }, [])
+  console.log(session)
 
   return (
     <div className={styles.container}>
@@ -54,29 +45,34 @@ export default function Page() {
         </p>
 
         <div className={styles.grid}>
-          {!session && <>
-            Not signed in <br />
-            <button onClick={signIn}>Sign in</button>
+          {loading && <img className="loading-spinner" src="/spinner.gif"></img>}
+          {!loading && !session && <>
+            <SignIn />
           </>}
-          {session && <>
+          {!loading && session && <>
             <div className={styles.card}>
-              <MapInput supabase={supabase} clientRef={clientRef} center={center} zoom={zoomLevel} />
-              Signed in as {session.user.email} <br />
-              <button onClick={signOut}>Sign out</button>
+              {
+                session.user.role === "DRIVER"
+                  ? <MapInput supabase={supabase} clientRef={session?.user?.id} center={center} zoom={zoomLevel} />
+                  : <p>Sorry, You need to sign in as driver</p>
+              }
+              <div className={styles.profile_container}>
+                Signed in as {session.user.email} [{session.user.role}]<br />
+                <button className={styles.sign_out} onClick={signOut}>Sign out</button>
+              </div>
             </div>
           </>}
-
         </div>
       </main>
 
-      <footer className={styles.footer}>
+      <footer className="footer">
         <a
           href="https://supabase.io"
           target="_blank"
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src="/supabase.svg" alt="Supabase Logo" className={styles.logo} />
+          <img src="/supabase.svg" alt="Supabase Logo" className="logo" />
         </a>
       </footer>
     </div>

@@ -49,7 +49,7 @@ function MapInput({ supabase, clientRef, center, zoom }) {
       await supabase
         .from('locations')
         .insert([
-          { latitude: pos.lat, longitude: pos.lng, ref: clientRef },
+          { latitude: pos.lat, longitude: pos.lng, user_id: clientRef },
         ])
     },
     [setCircles, circles, supabase, clientRef]

@@ -3,16 +3,16 @@ import { MapContainer, TileLayer, Polyline } from 'react-leaflet'
 import { RoundToFixDecimals } from "lib/Utils"
 import TextLog from "components/TextLog"
 
-function MapView({ supabase, clientRef, center, zoom }) {
+function MapView({ supabase, center, zoom }) {
   const [log, setLog] = useState(undefined)
   const [positions, setPositions] = useState([])
   const mySubscription = useRef(false)
 
   useEffect(() => {
-    let newLog = `Ref: ${clientRef}\nStart listerning...`
-    newLog += positions.map(item => { return `\nid=${item.id} lat=${RoundToFixDecimals(item.lat)} long=${RoundToFixDecimals(item.lng)}` })
+    let newLog = `Start listerning...`
+    newLog += positions.map(item => { return `\nuser_id=${item.user_id} lat=${RoundToFixDecimals(item.lat)} long=${RoundToFixDecimals(item.lng)}` })
     setLog(newLog)
-  }, [positions, clientRef])
+  }, [positions])
 
   useEffect(() => {
     // Listen to INSERT event on locations table
@@ -20,18 +20,16 @@ function MapView({ supabase, clientRef, center, zoom }) {
       .from('locations')
       .on('INSERT', payload => {
         const { new: newItem } = payload
-        const { id, ref, latitude, longitude } = newItem
-        if (ref === clientRef) {
-          console.log('Change received!', payload)
-          setPositions([...positions, { id, ref, lat: latitude, lng: longitude }])
-        }
+        const { id, user_id, latitude, longitude } = newItem
+        console.log('Change received!', payload)
+        setPositions([...positions, { id, user_id, lat: latitude, lng: longitude }])
       })
       .subscribe()
 
     return () => {
       if (mySubscription.current) supabase.removeSubscription(mySubscription.current)
     }
-  }, [supabase, clientRef, positions, setPositions])
+  }, [supabase, positions, setPositions])
 
   function drawPolyline() {
     const temp = positions.map(item => {

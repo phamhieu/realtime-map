@@ -32,12 +32,11 @@ Go to [app.supabase.io](https://app.supabase.io/), create a new organisation and
 Run this sql query to create `locations` table.
 ```sql
 -- USERS
-CREATE TYPE public.user_status AS ENUM ('ONLINE', 'OFFLINE');
+CREATE TYPE public.user_role AS ENUM ('DRIVER', 'MANAGER');
 CREATE TABLE public.users (
   id uuid NOT NULL PRIMARY KEY, -- UUID from auth.users
   username text,
-  status user_status DEFAULT 'OFFLINE'::public.user_status,
-  is_manager boolean DEFAULT false NOT NULL
+  role user_role DEFAULT 'DRIVER'::public.user_role
 );
 COMMENT ON table public.users IS 'Profile data for each user.';
 COMMENT ON column public.users.id IS 'References the internal Supabase Auth user.';

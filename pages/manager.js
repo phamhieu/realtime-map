@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import React from 'react'
 import Head from 'next/head'
 import styles from 'styles/Map.module.css'
 import dynamic from 'next/dynamic'
 import { supabase } from 'lib/Store'
-import { nanoid } from 'nanoid'
+import { signOut, useSession } from 'next-auth/client'
+import SignIn from 'components/SignIn'
 
 const MapView = dynamic(
   () => import('components/MapView'),
@@ -11,21 +12,12 @@ const MapView = dynamic(
 )
 
 export default function Page() {
-  const [clientRef, setClientRef] = useState(null)
+  const [session, loading] = useSession()
   const center = {
     lat: 1.3489728457596013,
     lng: 103.77043978311998
   }
   const zoomLevel = 11
-
-  useEffect(() => {
-    let ref = localStorage.getItem('_client-ref')
-    if (!ref) {
-      ref = nanoid()
-      localStorage.setItem('_client-ref', ref)
-    }
-    setClientRef(ref)
-  }, [])
 
   return (
     <div className={styles.container}>
@@ -52,21 +44,35 @@ export default function Page() {
         </p>
 
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <MapView supabase={supabase} clientRef={clientRef} center={center} zoom={zoomLevel} />
-          </div>
+          {loading && <img className="loading-spinner" src="/spinner.gif"></img>}
+          {!loading && !session && <>
+            <SignIn role="MANAGER" />
+          </>}
+          {!loading && session && <>
+            <div className={styles.card}>
+              {
+                session.user.role === "MANAGER"
+                  ? <MapView supabase={supabase} center={center} zoom={zoomLevel} />
+                  : <p>Sorry, You need to sign in as manager</p>
+              }
+              <div className={styles.profile_container}>
+                Signed in as {session.user.email} [{session.user.role}]<br />
+                <button className={styles.sign_out} onClick={signOut}>Sign out</button>
+              </div>
+            </div>
+          </>}
         </div>
 
       </main>
 
-      <footer className={styles.footer}>
+      <footer className="footer">
         <a
           href="https://supabase.io"
           target="_blank"
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src="/supabase.svg" alt="Supabase Logo" className={styles.logo} />
+          <img src="/supabase.svg" alt="Supabase Logo" className="logo" />
         </a>
       </footer>
     </div>
