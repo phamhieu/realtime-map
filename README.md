@@ -1,5 +1,5 @@
 # Live Tracker Map
-Build with supabase realtime, leafletjs. [[Demo App]](https://realtime-map.vercel.app/)
+Build with supabase auth, realtime and leafletjs. [[Demo App]](https://realtime-map-v2.vercel.app/)
 
 <p align="center">
 <kbd>

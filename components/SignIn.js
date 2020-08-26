@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { getCsrfToken } from 'next-auth/client'
-import styles from 'styles/components/SignIn.module.css'
 
 /**
  * Sign in with username and password
@@ -19,18 +18,44 @@ export default function SignIn({ role = "DRIVER" }) {
   }, [])
 
   return (
-    <form className={styles.container} method='post' action='/api/auth/callback/credentials'>
+    <form className="container" method='post' action='/api/auth/callback/credentials'>
       <input name='csrfToken' type='hidden' defaultValue={csrfToken} />
       <input name='role' type='hidden' defaultValue={role} />
-      <label className={styles.label}>
+      <label>
         Email
-        <input className={styles.input} name='username' type='email' />
+        <input name='username' type='email' />
       </label>
-      <label className={styles.label}>
+      <label>
         Password
-        <input className={styles.input} name='password' type='password' />
+        <input name='password' type='password' />
       </label>
-      <button className={styles.button} type='submit'>Sign in</button>
+      <button type='submit'>Sign in</button>
+      <style jsx>{`
+        .container {
+          min-width: 20rem;
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        label {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 1rem;
+        }
+        
+        input {
+          margin-top: 0.5rem;
+          padding: 0.5rem;
+        
+          font-size: 1rem;
+        }
+        
+        button {
+          padding: 0.5rem;
+          font-size: 1rem;
+        }
+      `}</style>
     </form>
   )
 }
