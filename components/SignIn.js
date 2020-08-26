@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getCsrfToken } from 'next-auth/client'
-import { useRouter } from 'next/router'
+import { auth } from 'lib/Store'
 
 /**
  * Sign in with username and password
@@ -8,31 +7,51 @@ import { useRouter } from 'next/router'
  * @param {String}       role     DRIVER/MANAGER. default as DRIVER
  */
 export default function SignIn({ role = "DRIVER" }) {
-  const router = useRouter()
-  const [csrfToken, setToken] = useState("")
+  const [formData, updateFormData] = useState({ role });
+  const [action, setAction] = useState(null);
 
-  useEffect(() => {
-    async function csrfToken() {
-      const token = await getCsrfToken()
-      setToken(token)
+  function onChange(e) {
+    updateFormData({
+      ...formData,
+
+      // Trimming any whitespace
+      [e.target.name]: e.target.value.trim()
+    });
+  };
+
+  function onSubmit(event) {
+    event.preventDefault();
+
+    console.log(action, formData)
+    if (action === "SIGNUP") {
+      auth.signup(formData.email, formData.password)
+        .then(response => {
+          console.log("Success!Check your inbox! ", response)
+          window.location.reload();
+        })
+        .catch(error => alert(error.error_description || error))
+    } else if (action === "LOGIN") {
+      auth.login(formData.email, formData.password, true)
+        .then(response => {
+          console.log("Success!Check your inbox! ", response);
+          window.location.reload();
+        })
+        .catch(error => alert(error.error_description || error))
     }
-    csrfToken()
-  }, [])
+  }
 
   return (
-    <form className="container" method='post' action='/api/auth/callback/credentials'>
-      <input name='csrfToken' type='hidden' defaultValue={csrfToken} />
-      <input name='role' type='hidden' defaultValue={role} />
-      <input name='callbackUrl' type='hidden' defaultValue={`${process.env.NEXT_PUBLIC_URL}${router.asPath}`} />
+    <form className="container" onSubmit={onSubmit}>
       <label>
         Email
-        <input name='username' type='email' />
+        <input name="email" type='email' onChange={onChange} />
       </label>
       <label>
         Password
-        <input name='password' type='password' />
+        <input name="password" type='password' onChange={onChange} />
       </label>
-      <button type='submit'>Sign in</button>
+      <button type='submit' onClick={() => setAction("SIGNUP")}>Sign up</button>
+      <button type='submit' onClick={() => setAction("LOGIN")}>Login</button>
       <style jsx>{`
         .container {
           min-width: 20rem;
@@ -50,11 +69,11 @@ export default function SignIn({ role = "DRIVER" }) {
         input {
           margin-top: 0.5rem;
           padding: 0.5rem;
-        
           font-size: 1rem;
         }
         
         button {
+          margin-top: 0.5rem;
           padding: 0.5rem;
           font-size: 1rem;
         }

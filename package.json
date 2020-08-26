@@ -10,6 +10,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^0.35.10",
     "leaflet": "^1.6.0",
+    "micro-api-client": "^3.3.0",
     "nanoid": "^3.1.12",
     "next": "9.5.2",
     "next-auth": "^3.1.0",
