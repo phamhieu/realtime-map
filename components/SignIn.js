@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getCsrfToken } from 'next-auth/client'
+import { useRouter } from 'next/router'
 
 /**
  * Sign in with username and password
@@ -7,6 +8,7 @@ import { getCsrfToken } from 'next-auth/client'
  * @param {String}       role     DRIVER/MANAGER. default as DRIVER
  */
 export default function SignIn({ role = "DRIVER" }) {
+  const router = useRouter()
   const [csrfToken, setToken] = useState("")
 
   useEffect(() => {
@@ -21,6 +23,7 @@ export default function SignIn({ role = "DRIVER" }) {
     <form className="container" method='post' action='/api/auth/callback/credentials'>
       <input name='csrfToken' type='hidden' defaultValue={csrfToken} />
       <input name='role' type='hidden' defaultValue={role} />
+      <input name='callbackUrl' type='hidden' defaultValue={`${process.env.NEXT_PUBLIC_URL}${router.asPath}`} />
       <label>
         Email
         <input name='username' type='email' />
