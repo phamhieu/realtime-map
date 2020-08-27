@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useContext } from 'react'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import styles from 'styles/Map.module.css'
 import { supabase, auth } from 'lib/Store'
 import SignIn from 'components/SignIn'
+import UserContext from 'lib/UserContext'
 
 const MapInput = dynamic(
   () => import('components/MapInput'),
@@ -11,7 +12,7 @@ const MapInput = dynamic(
 )
 
 export default function Page() {
-  const user = auth.currentUser();
+  const { user, signOut } = useContext(UserContext)
   const center = {
     lat: 1.3489728457596013,
     lng: 103.77043978311998
@@ -48,17 +49,8 @@ export default function Page() {
             <div className={styles.card}>
               <MapInput supabase={supabase} clientRef={user?.id} center={center} zoom={zoomLevel} />
               <div className={styles.profile_container}>
-                Signed in as {user.email} [{user.role}]<br />
-                <button className={styles.sign_out} onClick={() => {
-                  user.logout()
-                    .then(response => {
-                      console.log("User logged out")
-                      window.location.reload()
-                    })
-                    .catch(error => {
-                      console.log("Failed to logout user: %o", error)
-                    });
-                }}>Sign out</button>
+                Signed in as {user.username} [{user.role}]<br />
+                <button className={styles.sign_out} onClick={signOut}>Sign out</button>
               </div>
             </div>
           )}
