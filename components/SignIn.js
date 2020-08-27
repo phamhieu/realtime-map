@@ -36,15 +36,19 @@ export default function SignIn({ role = "DRIVER" }) {
   async function onSubmit(event) {
     event.preventDefault();
 
-    console.log(action, formData)
-    if (action === "SIGNUP") {
-      const signupResponse = await postAndWait(`/api/auth/signup`, formData)
-      await auth.loginWithRefreshToken(signupResponse.refresh_token, true)
-      window.location.reload();
-    } else if (action === "LOGIN") {
-      const loginResponse = await postAndWait(`/api/auth/login`, formData)
-      await auth.loginWithRefreshToken(loginResponse.refresh_token, true)
-      window.location.reload();
+    try {
+      if (action === "SIGNUP") {
+        const signupResponse = await postAndWait(`/api/auth/signup`, formData)
+        await auth.loginWithRefreshToken(signupResponse.refresh_token, true)
+        window.location.reload();
+      } else if (action === "LOGIN") {
+        const loginResponse = await postAndWait(`/api/auth/login`, formData)
+        await auth.loginWithRefreshToken(loginResponse.refresh_token, true)
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log('error', error)
+      alert("Authentication failed. Please check your input.")
     }
   }
 
