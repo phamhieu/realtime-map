@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import Head from 'next/head'
 import styles from 'styles/Map.module.css'
 import dynamic from 'next/dynamic'
-import { supabase, auth } from 'lib/Store'
+import { supabase } from 'lib/Store'
 import SignIn from 'components/SignIn'
 import UserContext from 'lib/UserContext'
 
@@ -50,7 +50,7 @@ export default function Page() {
               {
                 user.role === "MANAGER"
                   ? <MapView supabase={supabase} center={center} zoom={zoomLevel} />
-                  : <p>Sorry, You need to sign in as manager</p>
+                  : <p className={styles.error}>Sorry, you need to sign in as manager</p>
               }
               <div className={styles.profile_container}>
                 Signed in as {user.username} [{user.role}]<br />

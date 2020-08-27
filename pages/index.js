@@ -16,7 +16,10 @@ export default function Page() {
         </h1>
 
         <p className={styles.description}>
-          Get started by drag-drop the marker around to simulate location update
+          Get started by choosing your role as Driver or Manager.
+        </p>
+        <p className={styles.sub_description}>
+          You can only login 1 role at a time. Please use incognito window to test multi users.
         </p>
 
         <div className={styles.grid}>

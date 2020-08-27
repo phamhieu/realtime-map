@@ -28,6 +28,13 @@
 }
 
 .description {
+  margin-bottom: 0;
+  line-height: 1.5;
+  font-size: 1.5rem;
+}
+
+.sub_description {
+  margin-top: 0.5rem;
   line-height: 1.5;
   font-size: 1.5rem;
 }

@@ -50,7 +50,7 @@ export default function Page() {
               {
                 user.role === "DRIVER"
                   ? <MapInput supabase={supabase} clientRef={user?.id} center={center} zoom={zoomLevel} />
-                  : <p>Sorry, You need to sign in as driver</p>
+                  : <p className={styles.error}>Sorry, You need to sign in as driver</p>
               }
               <div className={styles.profile_container}>
                 Signed in as {user.username} [{user.role}]<br />
