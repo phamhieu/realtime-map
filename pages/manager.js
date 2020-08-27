@@ -2,8 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import styles from 'styles/Map.module.css'
 import dynamic from 'next/dynamic'
-import { supabase } from 'lib/Store'
-import { signOut, useSession } from 'next-auth/client'
+import { supabase, auth } from 'lib/Store'
 import SignIn from 'components/SignIn'
 
 const MapView = dynamic(
@@ -12,7 +11,7 @@ const MapView = dynamic(
 )
 
 export default function Page() {
-  const [session, loading] = useSession()
+  const user = auth.currentUser();
   const center = {
     lat: 1.3489728457596013,
     lng: 103.77043978311998
@@ -44,23 +43,25 @@ export default function Page() {
         </p>
 
         <div className={styles.grid}>
-          {loading && <img className="loading-spinner" src="/spinner.gif"></img>}
-          {!loading && !session && <>
-            <SignIn role="MANAGER" />
-          </>}
-          {!loading && session && <>
+          {!user && <SignIn />}
+          {user && (
             <div className={styles.card}>
-              {
-                session.user.role === "MANAGER"
-                  ? <MapView supabase={supabase} center={center} zoom={zoomLevel} />
-                  : <p>Sorry, You need to sign in as manager</p>
-              }
+              <MapView supabase={supabase} center={center} zoom={zoomLevel} />
               <div className={styles.profile_container}>
-                Signed in as {session.user.email} [{session.user.role}]<br />
-                <button className={styles.sign_out} onClick={signOut}>Sign out</button>
+                Signed in as {user.email} [{user.role}]<br />
+                <button className={styles.sign_out} onClick={() => {
+                  user.logout()
+                    .then(response => {
+                      console.log("User logged out")
+                      window.location.reload()
+                    })
+                    .catch(error => {
+                      console.log("Failed to logout user: %o", error)
+                    });
+                }}>Sign out</button>
               </div>
             </div>
-          </>}
+          )}
         </div>
 
       </main>

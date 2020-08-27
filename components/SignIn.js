@@ -19,24 +19,32 @@ export default function SignIn({ role = "DRIVER" }) {
     });
   };
 
-  function onSubmit(event) {
+  async function postAndWait(url, data, options = {}) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(data),
+      ...options,
+    })
+    const body = await response.json()
+    return body
+  }
+
+  async function onSubmit(event) {
     event.preventDefault();
 
     console.log(action, formData)
     if (action === "SIGNUP") {
-      auth.signup(formData.email, formData.password)
-        .then(response => {
-          console.log("Success!Check your inbox! ", response)
-          window.location.reload();
-        })
-        .catch(error => alert(error.error_description || error))
+      const signupResponse = await postAndWait(`/api/auth/signup`, formData)
+      await auth.loginWithRefreshToken(signupResponse.refresh_token, true)
+      window.location.reload();
     } else if (action === "LOGIN") {
-      auth.login(formData.email, formData.password, true)
-        .then(response => {
-          console.log("Success!Check your inbox! ", response);
-          window.location.reload();
-        })
-        .catch(error => alert(error.error_description || error))
+      const loginResponse = await postAndWait(`/api/auth/login`, formData)
+      await auth.loginWithRefreshToken(loginResponse.refresh_token, true)
+      window.location.reload();
     }
   }
 
