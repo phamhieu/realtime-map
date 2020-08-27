@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Head from 'next/head'
 import styles from 'styles/Map.module.css'
 import dynamic from 'next/dynamic'
 import { supabase, auth } from 'lib/Store'
 import SignIn from 'components/SignIn'
+import UserContext from 'lib/UserContext'
 
 const MapView = dynamic(
   () => import('components/MapView'),
@@ -11,7 +12,7 @@ const MapView = dynamic(
 )
 
 export default function Page() {
-  const user = auth.currentUser();
+  const { user, signOut } = useContext(UserContext)
   const center = {
     lat: 1.3489728457596013,
     lng: 103.77043978311998
@@ -43,22 +44,17 @@ export default function Page() {
         </p>
 
         <div className={styles.grid}>
-          {!user && <SignIn />}
+          {!user && <SignIn role="MANAGER" />}
           {user && (
             <div className={styles.card}>
-              <MapView supabase={supabase} center={center} zoom={zoomLevel} />
+              {
+                user.role === "MANAGER"
+                  ? <MapView supabase={supabase} center={center} zoom={zoomLevel} />
+                  : <p>Sorry, You need to sign in as manager</p>
+              }
               <div className={styles.profile_container}>
-                Signed in as {user.email} [{user.role}]<br />
-                <button className={styles.sign_out} onClick={() => {
-                  user.logout()
-                    .then(response => {
-                      console.log("User logged out")
-                      window.location.reload()
-                    })
-                    .catch(error => {
-                      console.log("Failed to logout user: %o", error)
-                    });
-                }}>Sign out</button>
+                Signed in as {user.username} [{user.role}]<br />
+                <button className={styles.sign_out} onClick={signOut}>Sign out</button>
               </div>
             </div>
           )}

@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import styles from 'styles/Map.module.css'
-import { supabase, auth } from 'lib/Store'
+import { supabase } from 'lib/Store'
 import SignIn from 'components/SignIn'
 import UserContext from 'lib/UserContext'
 
@@ -47,7 +47,11 @@ export default function Page() {
           {!user && <SignIn />}
           {user && (
             <div className={styles.card}>
-              <MapInput supabase={supabase} clientRef={user?.id} center={center} zoom={zoomLevel} />
+              {
+                user.role === "DRIVER"
+                  ? <MapInput supabase={supabase} clientRef={user?.id} center={center} zoom={zoomLevel} />
+                  : <p>Sorry, You need to sign in as driver</p>
+              }
               <div className={styles.profile_container}>
                 Signed in as {user.username} [{user.role}]<br />
                 <button className={styles.sign_out} onClick={signOut}>Sign out</button>
