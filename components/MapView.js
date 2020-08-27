@@ -61,7 +61,7 @@ function MapView({ supabase, center, zoom }) {
       const { color, data } = item
       return drawPolyline(color, data)
     })
-    console.log(result)
+
     return result
   }
 
