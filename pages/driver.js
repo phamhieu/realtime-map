@@ -11,12 +11,35 @@ const MapInput = dynamic(
   { ssr: false }
 )
 
+function randomPosition() {
+  var array = [
+    {
+      lat: 1.3489728457596013,
+      lng: 103.77043978311998
+    },
+    {
+      lat: 1.37462,
+      lng: 103.77694
+    },
+    {
+      lat: 1.41006,
+      lng: 103.77144
+    },
+    {
+      lat: 1.34313,
+      lng: 103.84191
+    },
+    {
+      lat: 1.35454,
+      lng: 103.69746
+    }
+  ];
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 export default function Page() {
   const { user, signOut } = useContext(UserContext)
-  const center = {
-    lat: 1.3489728457596013,
-    lng: 103.77043978311998
-  }
+  const center = randomPosition()
   const zoomLevel = 14
 
   return (

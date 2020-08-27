@@ -3,9 +3,15 @@ import { MapContainer, TileLayer, Polyline } from 'react-leaflet'
 import { RoundToFixDecimals } from "lib/Utils"
 import TextLog from "components/TextLog"
 
+function randomColor() {
+  var array = ["black", "magenta", "blue", "indigo", "green", "blueviolet"];
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 function MapView({ supabase, center, zoom }) {
   const [log, setLog] = useState(undefined)
   const [positions, setPositions] = useState([])
+  const [userPositionsDict, setUserPositionsDict] = useState([])
   const mySubscription = useRef(false)
 
   useEffect(() => {
@@ -19,26 +25,44 @@ function MapView({ supabase, center, zoom }) {
     mySubscription.current = supabase
       .from('locations')
       .on('INSERT', payload => {
+        console.log('Change received!', payload)
         const { new: newItem } = payload
         const { id, user_id, latitude, longitude } = newItem
-        console.log('Change received!', payload)
+
+        let userPositions = userPositionsDict[user_id]
+        if (userPositions) userPositions.data = [...userPositions.data, { id, user_id, lat: latitude, lng: longitude }]
+        else userPositions = { color: randomColor(), data: [{ id, user_id, lat: latitude, lng: longitude }] }
+
         setPositions([...positions, { id, user_id, lat: latitude, lng: longitude }])
+        setUserPositionsDict({ ...userPositionsDict, [user_id]: userPositions })
       })
       .subscribe()
 
     return () => {
       if (mySubscription.current) supabase.removeSubscription(mySubscription.current)
     }
-  }, [supabase, positions, setPositions])
+  }, [supabase, positions, setPositions, userPositionsDict, setUserPositionsDict])
 
-  function drawPolyline() {
-    const temp = positions.map(item => {
+  function drawPolylines() {
+    // console.log(userPositionsDict)
+    function drawPolyline(color, data) {
+      const polyline = data.map(item => {
+        if (!item) return
+        const { lat, lng } = item
+        return [lat, lng]
+      })
+      return <Polyline pathOptions={{ color: color }} positions={polyline} />
+    }
+
+    let result = Object.keys(userPositionsDict).map(key => {
+      const item = userPositionsDict[key]
       if (!item) return
-      const { lat, lng } = item
-      return [lat, lng]
+
+      const { color, data } = item
+      return drawPolyline(color, data)
     })
-    const polyline = [center, ...temp]
-    return <Polyline pathOptions={{ color: 'black' }} positions={polyline} />
+    console.log(result)
+    return result
   }
 
   return (
@@ -48,14 +72,9 @@ function MapView({ supabase, center, zoom }) {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {drawPolyline()}
+        {drawPolylines()}
       </MapContainer>
       <TextLog log={log} />
-
-      <style jsx>{`
-        .map-view {
-        }
-      `}</style>
     </div>
   )
 }

@@ -17,7 +17,7 @@ export default function Page() {
     lat: 1.3489728457596013,
     lng: 103.77043978311998
   }
-  const zoomLevel = 11
+  const zoomLevel = 12
 
   return (
     <div className={styles.container}>
