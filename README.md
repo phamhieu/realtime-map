@@ -24,7 +24,7 @@ npm install
 # Open a terminal and run:
 npm run dev
 ```
-Visit http://localhost:4000 and start testing!
+Visit http://localhost:3000 and start testing!
 
 ## Test with your own Supabase Project
 #### Create locations table
@@ -61,8 +61,19 @@ CREATE POLICY "Allow individual insert access" on public.locations FOR INSERT WI
 ```
 
 #### Setup env vars
-Make a .env.local in this folder with the following, you can get these values from your project dashboard at [app.supabase.io](https://app.supabase.io/):
+Next, copy the `.env.local.example` file in this directory to `.env.local` (which will be ignored by Git):
+
 ```bash
-NEXT_PUBLIC_SUPABASE_ENDPOINT=<your-supabase-url>
-NEXT_PUBLIC_SUPABASE_APIKEY=<your-supabase-key>
+cp .env.local.example .env.local
 ```
+
+Then set each variable on `.env.local`:
+
+- `NEXT_PUBLIC_SUPABASE_ENDPOINT` should be the **API URL**
+- `NEXT_PUBLIC_SUPABASE_APIKEY` should be the **anon** key
+
+You can get these values from your project dashboard at [app.supabase.io](https://app.supabase.io/).
+
+The **anon** key is your client-side API key. It allows "anonymous access" to your database, until the user has logged in. Once they have logged in, the keys will switch to the user's own login token. This enables row level security for your data.
+
+> **_NOTE_**: The `service_role` key has full access to your data, bypassing any security policies. These keys have to be kept secret and are meant to be used in server environments and never on a client or browser.
