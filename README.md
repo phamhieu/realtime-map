@@ -1,4 +1,4 @@
-# Live Tracker Map
+# Live Tracker Map [WIP]
 Build with supabase auth, realtime and leafletjs. [[Demo App]](https://realtime-map-v2.vercel.app/)
 
 <p align="center">
@@ -10,8 +10,8 @@ Build with supabase auth, realtime and leafletjs. [[Demo App]](https://realtime-
 ## How to use
 #### Clone this folder
 ```bash
-git clone https://github.com/supabase/supabase
-cd supabase/examples/live-tracker-map
+git clone https://github.com/phamhieu/supabase-realtime-map-v2.git
+cd supabase-realtime-map-v2
 ```
 
 #### Install dependencies
