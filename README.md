@@ -27,9 +27,9 @@ npm run dev
 Visit http://localhost:3000 and start testing!
 
 ## Test with your own Supabase Project
-#### Create schema
+#### Database schema
 Go to [app.supabase.io](https://app.supabase.io/), create a new organisation and project if you haven't had one.  
-Run this sql query to create `locations` table.
+Run this sql query to create required tables.
 ```sql
 -- USERS
 CREATE TYPE public.user_role AS ENUM ('DRIVER', 'MANAGER');
