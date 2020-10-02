@@ -13,8 +13,8 @@ function MyApp({ Component, pageProps }) {
         if (!authUser) return
 
         const { body: user } = await supabase.from('users')
-          .match({ id: authUser.id })
           .select('*')
+          .match({ id: authUser.id })
           .single()
         setUser(user)
       } catch (error) {
