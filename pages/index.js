@@ -1,9 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 import styles from 'styles/Home.module.css'
+import UserContext from 'lib/UserContext'
 
 export default function Page() {
+  const { user } = useContext(UserContext)
+
+  useEffect(() => {
+    console.log("user: ", user)
+  }, [])
+
   return (
     <div className={styles.container}>
       <Head>

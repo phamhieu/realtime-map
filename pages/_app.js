@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     async function loadUser() {
       try {
-        const authUser = auth.currentUser()
+        const authUser = auth.currentUser
         if (!authUser) return
 
         const { body: user } = await supabase.from('users')
@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }) {
 
   function onSignOut() {
     try {
-      const user = auth.currentUser();
+      const user = auth.currentUser
       user.logout()
         .then(response => {
           console.log("User logged out")
