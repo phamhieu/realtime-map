@@ -39,11 +39,11 @@ export default function SignIn({ role = "DRIVER" }) {
     try {
       if (action === "SIGNUP") {
         const signupResponse = await postAndWait(`/api/auth/signup`, formData)
-        await auth.loginWithRefreshToken(signupResponse.refresh_token, true)
+        await auth.api.refreshAccessToken(signupResponse.refresh_token)
         window.location.reload();
       } else if (action === "LOGIN") {
         const loginResponse = await postAndWait(`/api/auth/login`, formData)
-        await auth.loginWithRefreshToken(loginResponse.refresh_token, true)
+        await auth.loginWithRefreshToken(loginResponse.refresh_token)
         window.location.reload();
       }
     } catch (error) {
