@@ -63,14 +63,14 @@ export default function Page() {
         {!session && <SignIn />}
         {session && (
           <div className={styles.card}>
-            {userRole.toUpperCase() == "DRIVER" ? (
+            {userRole?.toUpperCase() == "DRIVER" && (
               <MapInput
-                supabase={supabase}
-                clientRef={user?.id}
+                clientRef={session.user?.id}
                 center={center}
                 zoom={zoomLevel}
               />
-            ) : (
+            )}
+            {userRole?.toUpperCase() == "MANAGER" && (
               <p className={styles.error}>
                 Sorry, You need to sign in as driver
               </p>

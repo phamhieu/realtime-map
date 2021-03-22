@@ -23,6 +23,11 @@ export default function Page() {
     setUsername(session?.user?.user_metadata?.username);
   }, [session]);
 
+  async function onSignOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) console.log("Error logging out:", error.message);
+  }
+
   return (
     <PageLayout title="Manager View">
       <h1 className={styles.title}>Manager View</h1>
@@ -36,16 +41,17 @@ export default function Page() {
         {!session && <SignIn role="MANAGER" />}
         {session && (
           <div className={styles.card}>
-            {userRole.toUpperCase() == "MANAGER" ? (
-              <MapView supabase={supabase} center={center} zoom={zoomLevel} />
-            ) : (
+            {userRole?.toUpperCase() == "MANAGER" && (
+              <MapView center={center} zoom={zoomLevel} />
+            )}
+            {userRole?.toUpperCase() == "DRIVER" && (
               <p className={styles.error}>
                 Sorry, you need to sign in as manager
               </p>
             )}
             <div className={styles.profile_container}>
               Signed in as {username} [{userRole}]<br />
-              <button className={styles.sign_out} onClick={signOut}>
+              <button className={styles.sign_out} onClick={onSignOut}>
                 Sign out
               </button>
             </div>

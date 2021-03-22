@@ -19,7 +19,7 @@ export default function Page() {
         Get started by choosing your role as Driver or Manager.
       </p>
       <p className={styles.sub_description}>
-        You can only login 1 role at a time. Please use incognito window to test
+        You can only login 1 role at a time. Please use incognito mode to test
         multi users.
       </p>
 

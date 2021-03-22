@@ -19,25 +19,34 @@ export default function SignIn({ role = "DRIVER" }) {
     });
   }
 
+  async function updateUserRole(user) {
+    if (!user || user.user_metadata?.role) return;
+
+    // update user role
+    await supabase.auth.update({
+      data: { role },
+    });
+  }
+
   async function onSubmit(event) {
     event.preventDefault();
 
     try {
       if (action === "SIGNUP") {
         const { email, password, role } = formData;
-        const { error } = await supabase.auth.signUp(email, password);
+        const { error, user } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
+
         // update user role
         await supabase.auth.update({
           data: { role },
         });
       } else if (action === "LOGIN") {
-        const { email, password } = formData;
-        await supabase.auth.signIn(email, password);
+        const { error } = await supabase.auth.signIn(formData);
+        if (error) throw error;
       }
     } catch (error) {
-      console.log("error", error);
-      alert("Authentication failed. Please check your input.");
+      alert(error.message);
     }
   }
 

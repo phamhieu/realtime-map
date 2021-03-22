@@ -34,6 +34,8 @@ Visit http://localhost:3000 and start testing!
 
 ## Test with your own Supabase Project
 
+NOTE: you have to enable `DISABLE EMAIL CONFIRMATIONS` under your Supabase project settings.
+
 #### Database schema
 
 Go to [app.supabase.io](https://app.supabase.io/), create a new organisation and project if you haven't had one.  
