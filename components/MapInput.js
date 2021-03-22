@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-import { RoundToFixDecimals } from "lib/Utils";
+import { RoundToFixDecimals } from "lib/utils";
 import { supabase } from "lib/api";
 import TextLog from "components/TextLog";
 
