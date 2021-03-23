@@ -13,8 +13,8 @@ Build with supabase-js and leafletjs. [[Demo App]](https://realtime-map.vercel.a
 #### Clone this folder
 
 ```bash
-git clone https://github.com/phamhieu/supabase-realtime-map-v2.git
-cd supabase-realtime-map-v2
+git clone https://github.com/phamhieu/realtime-map.git
+cd realtime-map
 ```
 
 #### Install dependencies
