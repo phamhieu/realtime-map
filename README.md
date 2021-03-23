@@ -1,10 +1,10 @@
 # Live Tracker Map [WIP]
 
-Build with supabase auth, realtime and leafletjs. [[Demo App]](https://realtime-map-v2.vercel.app/)
+Build with supabase-js and leafletjs. [[Demo App]](https://realtime-map.vercel.app)
 
 <p align="center">
 <kbd>
-<img src="https://media.giphy.com/media/iDU80ngpsSddc0ObGI/giphy.gif" alt="Demo"/>
+<img src="https://i.imgur.com/WoMRKwo.gif" alt="Demo"/>
 </kbd>
 </p>
 
