@@ -1,71 +1,30 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useReducer } from "react";
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import { RoundToFixDecimals } from "lib/utils";
 import { supabase } from "lib/api";
 import TextLog from "components/TextLog";
 
-function randomColor() {
-  var array = ["black", "magenta", "blue", "indigo", "green", "blueviolet"];
-  return array[Math.floor(Math.random() * array.length)];
-}
-
-function MapView({ center, zoom }) {
-  const [log, setLog] = useState(undefined);
-  const [positions, setPositions] = useState([]);
-  const [userPositionsDict, setUserPositionsDict] = useState([]);
-  const mySubscription = useRef(false);
-
-  useEffect(() => {
-    let newLog = `Start listerning...`;
-    newLog += positions.map((item) => {
-      return `\nuser_id=${item.user_id} lat=${RoundToFixDecimals(
-        item.lat
-      )} long=${RoundToFixDecimals(item.lng)}`;
-    });
-    setLog(newLog);
-  }, [positions]);
+export default function MapView({ center, zoom }) {
+  const [state, dispatch] = useReducer(mapReducer, initialState);
 
   useEffect(() => {
     // Listen to INSERT event on locations table
-    mySubscription.current = supabase
+    const subscription = supabase
       .from("locations")
       .on("INSERT", (payload) => {
-        console.log("Change received!", payload);
-        const { new: newItem } = payload;
-        const { id, user_id, latitude, longitude } = newItem;
-
-        let userPositions = userPositionsDict[user_id];
-        if (userPositions)
-          userPositions.data = [
-            ...userPositions.data,
-            { id, user_id, lat: latitude, lng: longitude },
-          ];
-        else
-          userPositions = {
-            color: randomColor(),
-            data: [{ id, user_id, lat: latitude, lng: longitude }],
-          };
-
-        setPositions([
-          ...positions,
-          { id, user_id, lat: latitude, lng: longitude },
-        ]);
-        setUserPositionsDict({
-          ...userPositionsDict,
-          [user_id]: userPositions,
-        });
+        console.log("New Position received!", payload);
+        dispatch({ payload: payload.new });
       })
       .subscribe();
 
     return () => {
-      if (mySubscription.current)
-        supabase.removeSubscription(mySubscription.current);
+      if (subscription) supabase.removeSubscription(subscription);
     };
-  }, [positions, setPositions, userPositionsDict, setUserPositionsDict]);
+  }, []);
 
   function drawPolylines() {
-    let result = Object.keys(userPositionsDict).map((key, idx) => {
-      const item = userPositionsDict[key];
+    let result = Object.keys(state.userPositions).map((key, idx) => {
+      const item = state.userPositions[key];
       if (!item) return;
 
       const { color, data } = item;
@@ -96,8 +55,37 @@ function MapView({ center, zoom }) {
         />
         {drawPolylines()}
       </MapContainer>
-      <TextLog log={log} />
+      <TextLog log={state.log} />
     </div>
   );
 }
-export default MapView;
+
+function randomColor() {
+  var array = ["black", "magenta", "blue", "indigo", "green", "blueviolet"];
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+const initialState = {
+  log: "Start listerning...",
+  userPositions: {},
+};
+
+const mapReducer = (state, action) => {
+  const { id, user_id, latitude: lat, longitude: lng } = action.payload;
+  const position = { id, user_id, lat, lng };
+
+  let positions = state.userPositions[user_id];
+  if (positions) positions.data = [...positions.data, position];
+  else positions = { color: randomColor(), data: [position] };
+  const userPositions = { ...state.userPositions, [user_id]: positions };
+
+  let log = state.log;
+  log += `\nuser_id=${user_id}`;
+  log += ` lat=${RoundToFixDecimals(lat)}`;
+  log += ` long=${RoundToFixDecimals(lng)}`;
+
+  return {
+    log,
+    userPositions,
+  };
+};
